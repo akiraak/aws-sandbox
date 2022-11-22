@@ -1,0 +1,16 @@
+variable "name" {}
+variable "route53_zone_name" {}
+variable "api_subdomain" {}
+variable "region" {}
+variable "az_1" {}
+variable "az_2" {}
+#variable "acm_certificate_arn_app" {}
+#variable "acm_certificate_arn_admin" {}
+variable "public_key_path_management" {}
+variable "public_key_path_app" {}
+variable "instance_type_management" {}
+variable "instance_type_app" {}
+variable "instance_type_admin" {}
+variable "db_instance_type_app" {}
+variable "auto_deploy" {}
+variable "ssm_parameter_store_base" {}
