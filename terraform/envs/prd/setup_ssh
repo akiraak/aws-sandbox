@@ -1,0 +1,5 @@
+#!/bin/bash
+ENV=prd
+scp ~/.ssh/key-awssandbox-app awssandbox-management:~/.ssh/
+scp ~/.ssh/key-awssandbox-management awssandbox-management:~/.ssh/
+scp config awssandbox-management:~/.ssh/

@@ -14,27 +14,6 @@ data "aws_ssm_parameter" "db_password" {
 }
 
 # ================================================
-# Subnet: Private app db
-# ================================================
-resource "aws_subnet" "private_app_db_1" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.vpc.subnet_private_app_db_1_cidr_block
-  availability_zone = var.az_1
-  tags = {
-    Name = "${var.name}-private-app-db-1"
-  }
-}
-
-resource "aws_subnet" "private_app_db_2" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.vpc.subnet_private_app_db_2_cidr_block
-  availability_zone = var.az_2
-  tags = {
-    Name = "${var.name}-private-app-db-2"
-  }
-}
-
-# ================================================
 # DB Subnet: app db
 # ================================================
 resource "aws_db_subnet_group" "app" {
@@ -47,49 +26,6 @@ resource "aws_db_subnet_group" "app" {
       Name = "${var.name}-app"
   }
 }
-
-# ================================================
-# Security group: app db
-# ================================================
-resource "aws_security_group" "app_db" {
-  name                   = "${var.name}-app-db"
-  vpc_id                 = aws_vpc.main.id
-  revoke_rules_on_delete = false
-  tags = {
-    Name = "${var.name}-app-db"
-  }
-}
-
-/*
-resource "aws_security_group_rule" "app-db-sg-rule-mysql-from-app" {
-  security_group_id = aws_security_group.app_db.id
-  type = "ingress"
-  from_port                = 3306
-  to_port                  = 3306
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.app.id
-}
-*/
-
-resource "aws_security_group_rule" "app-db-sg-rule-mysql-from-management" {
-  security_group_id = aws_security_group.app_db.id
-  type = "ingress"
-  from_port                = 3306
-  to_port                  = 3306
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.management.id
-}
-
-/*
-resource "aws_security_group" "app_db_for_admin_vpcconnector" {
-  name                   = "${var.name}-app-db-for-admin-vpcconnector"
-  vpc_id                 = aws_vpc.main.id
-  revoke_rules_on_delete = false
-  tags = {
-    Name = "${var.name}-app-db-for-admin-vpcconnector"
-  }
-}
-*/
 
 /*
 # ================================================
@@ -123,7 +59,7 @@ resource "aws_rds_cluster" "this" {
   cluster_identifier = "${var.name}-database-cluster"
 
   db_subnet_group_name   = aws_db_subnet_group.app.name
-  vpc_security_group_ids = [aws_security_group.app_db.id]
+  vpc_security_group_ids = [aws_security_group.db.id]
 
   engine = "aurora-mysql"
   engine_version = "8.0.mysql_aurora.3.01.0"
@@ -149,7 +85,6 @@ resource "aws_rds_cluster_instance" "this" {
   engine = aws_rds_cluster.this.engine
   engine_version = aws_rds_cluster.this.engine_version
 
-  #instance_class = "db.t4g.medium"
   instance_class = var.db_instance_type_app
   db_subnet_group_name = aws_rds_cluster.this.db_subnet_group_name
 }

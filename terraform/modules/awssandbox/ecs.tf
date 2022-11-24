@@ -13,6 +13,10 @@ resource "aws_ecs_cluster" "this" {
     name  = "containerInsights"
     value = "enabled"
   }
+
+  tags = {
+    Name = "${var.name}"
+  }
 }
 
 resource "aws_ecs_cluster_capacity_providers" "this" {
@@ -30,7 +34,8 @@ resource "aws_ecs_cluster_capacity_providers" "this" {
 # ECS IAM Role
 ####################################################
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "ecs_task_execution_role"
+  name               = "${var.name}-ecs-task-execution"
+
   assume_role_policy = jsonencode({
     Version   = "2012-10-17"
     Statement = [
@@ -41,6 +46,7 @@ resource "aws_iam_role" "ecs_task_execution_role" {
       }
     ]
   })
+
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
     "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
@@ -225,9 +231,9 @@ resource "aws_ecs_task_definition" "backend" {
   ])
 }
 
-####################################################
+# ================================================
 # ECS Cluster Service
-####################################################
+# ================================================
 
 /*
 resource "aws_ecs_service" "frontend" {
@@ -304,19 +310,18 @@ resource "aws_ecs_service" "backend" {
     rollback = true
   }
   network_configuration {
-    assign_public_ip = true
+    assign_public_ip = false
     subnets          = [
-      #aws_subnet.public_1c.id,
-      aws_subnet.public_app_alb_1.id,
+      aws_subnet.private_app_1.id,
+      aws_subnet.private_app_2.id,
     ]
     security_groups = [
-      #aws_security_group.app.id,
-      aws_security_group.app_alb.id
+      aws_security_group.vpc.id,
+      aws_security_group.db.id,
     ]
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.backend.arn
-    #container_name   = local.backend_task_middleware_container_name
     container_name   = local.backend_task_app_container_name
     container_port   = 80
   }
@@ -341,7 +346,6 @@ resource "aws_lb_listener_rule" "backend" {
   }
   condition {
     host_header {
-      #values = [local.api_domain_name]
       values = [var.api_subdomain]
     }
   }
