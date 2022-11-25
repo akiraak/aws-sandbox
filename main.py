@@ -21,6 +21,7 @@ async def root():
     return {"message": "Hello World!"}
 
 
-@app.get("/users")
+@app.get("/user")
 async def get_users(db: Session = Depends(get_db)):
-    return {"message": "users"}
+    user = crud.get_user(db=db, user_id=1)
+    return {"message": str(user)}
