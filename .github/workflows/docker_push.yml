@@ -36,5 +36,7 @@ jobs:
       uses: kayac/ecspresso@v1
       with:
         version: v1.99.5
+
+    - name: Deploy to ecs
       run: ecspresso deploy --config config.yaml
       working-directory: ./ecspresso
