@@ -1,0 +1,44 @@
+{
+  "deploymentConfiguration": {
+    "deploymentCircuitBreaker": {
+      "enable": true,
+      "rollback": true
+    },
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 100
+  },
+  "deploymentController": {
+    "type": "ECS"
+  },
+  "desiredCount": 1,
+  "enableECSManagedTags": false,
+  "enableExecuteCommand": true,
+  "healthCheckGracePeriodSeconds": 60,
+  "launchType": "FARGATE",
+  "loadBalancers": [
+    {
+      "containerName": "awssandbox-api-container",
+      "containerPort": 80,
+      "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:131477731930:targetgroup/awssandbox-service-tg-backend/42f5b82e0bc886f5"
+    }
+  ],
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "assignPublicIp": "DISABLED",
+      "securityGroups": [
+        "sg-0cee2918761f941d0",
+        "sg-0b344a5ae6a611bda"
+      ],
+      "subnets": [
+        "subnet-04ac2cd5c96744774",
+        "subnet-038490e0ce73a0976"
+      ]
+    }
+  },
+  "pendingCount": 0,
+  "platformFamily": "Linux",
+  "platformVersion": "LATEST",
+  "propagateTags": "SERVICE",
+  "runningCount": 0,
+  "schedulingStrategy": "REPLICA"
+}

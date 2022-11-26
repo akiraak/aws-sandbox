@@ -1,0 +1,50 @@
+{
+  "containerDefinitions": [
+    {
+      "cpu": 0,
+      "essential": true,
+      "image": "131477731930.dkr.ecr.us-west-2.amazonaws.com/awssandbox-api:latest",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/awssandbox/backend/api",
+          "awslogs-region": "us-west-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "name": "awssandbox-api-container",
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "ENV_TYPE",
+          "valueFrom": "arn:aws:ssm:us-west-2:131477731930:parameter/asandbox/app_env"
+        },
+        {
+          "name": "SQLALCHEMY_DATABASE_URI",
+          "valueFrom": "arn:aws:ssm:us-west-2:131477731930:parameter/asandbox/SQLALCHEMY_DATABASE_URI"
+        },
+        {
+          "name": "SQLALCHEMY_CHECK_SAME_THREAD",
+          "valueFrom": "arn:aws:ssm:us-west-2:131477731930:parameter/asandbox/SQLALCHEMY_CHECK_SAME_THREAD"
+        }
+      ]
+    }
+  ],
+  "cpu": "256",
+  "executionRoleArn": "arn:aws:iam::131477731930:role/awssandbox-ecs-task-execution",
+  "family": "awssandbox-api-task-backend",
+  "ipcMode": "",
+  "memory": "512",
+  "networkMode": "awsvpc",
+  "pidMode": "",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "taskRoleArn": "arn:aws:iam::131477731930:role/awssandbox-ecs-task-execution"
+}
