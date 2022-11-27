@@ -4,10 +4,7 @@ variable "main" {
     "route53_zone_name" = "awssandbox.mspv2.com"
     "api_subdomain" = "api.awssandbox.mspv2.com"
     "region" = "us-west-2"
-    "az_1" = "us-west-2a"
-    "az_2" = "us-west-2c"
-    #"acm_certificate_arn_app" = "arn:aws:acm:us-west-2:131477731930:certificate/20f1a4a8-7f64-4674-b16d-84d37a135612"
-    #"acm_certificate_arn_admin" = ""
+    "azs" = ["us-west-2a", "us-west-2c"]
     "instance_type_management" = "t4g.nano"
     "instance_type_app" = "t4g.nano"
     #"instance_type_app" = "m6g.large"

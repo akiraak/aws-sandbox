@@ -16,11 +16,10 @@ data "aws_ssm_parameter" "db_password" {
 # ================================================
 # DB Subnet: app db
 # ================================================
-resource "aws_db_subnet_group" "app" {
+resource "aws_db_subnet_group" "db" {
   name        = "${var.name}-app"
   subnet_ids  = [
-    "${aws_subnet.private_app_db_1.id}",
-    "${aws_subnet.private_app_db_2.id}"
+    for s in aws_subnet.private_db : s.id
   ]
   tags = {
       Name = "${var.name}-app"
@@ -29,36 +28,31 @@ resource "aws_db_subnet_group" "app" {
 
 /*
 # ================================================
-# RDS: app db
+# RDS: DB
 # ================================================
 resource "aws_db_instance" "db" {
-  identifier          = "${var.name}-app"
+  identifier          = "${var.name}-db"
   allocated_storage   = 20
   storage_type        = "gp2"
   engine              = "mysql"
   engine_version      = "8.0.23"
   instance_class      = var.db_instance_type_app
-  #db_name             = "cabo_app"
-  #username            = "root"
-  #password            = "rootroot"
   db_name             = data.aws_ssm_parameter.db_name.value
   username            = data.aws_ssm_parameter.db_user.value
   password            = data.aws_ssm_parameter.db_password.value
   skip_final_snapshot = true
-  #vpc_security_group_ids = [aws_security_group.app_db.id, aws_security_group.app_db_for_admin_vpcconnector.id]
-  vpc_security_group_ids = [aws_security_group.app_db.id]
-  db_subnet_group_name   = aws_db_subnet_group.app.name
+  vpc_security_group_ids = [aws_security_group.db.id]
+  db_subnet_group_name   = aws_db_subnet_group.db.name
 }
 */
 
 ####################################################
 # RDS Cluster
 ####################################################
-
 resource "aws_rds_cluster" "this" {
   cluster_identifier = "${var.name}-database-cluster"
 
-  db_subnet_group_name   = aws_db_subnet_group.app.name
+  db_subnet_group_name   = aws_db_subnet_group.db.name
   vpc_security_group_ids = [aws_security_group.db.id]
 
   engine = "aurora-mysql"

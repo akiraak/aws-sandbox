@@ -14,9 +14,11 @@ output "db_instance_endpoint" {
   value = module.awssandbox.db_instance_endpoint
 }
 
-#output "api_app_runner_url" {
-#  value = module.cabo.api_app_runner_url
-#}
+/*
+output "api_app_runner_url" {
+  value = module.cabo.api_app_runner_url
+}
+*/
 
 #output "admin_app_runner_url" {
 #  value = module.cabo.admin_app_runner_url

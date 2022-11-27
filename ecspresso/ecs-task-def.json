@@ -7,12 +7,12 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/awssandbox/backend/api",
+          "awslogs-group": "/ecs/awssandbox/app",
           "awslogs-region": "us-west-2",
           "awslogs-stream-prefix": "ecs"
         }
       },
-      "name": "awssandbox-api-container",
+      "name": "awssandbox-app-container",
       "portMappings": [
         {
           "containerPort": 80,
@@ -23,7 +23,7 @@
       "secrets": [
         {
           "name": "ENV_TYPE",
-          "valueFrom": "arn:aws:ssm:us-west-2:131477731930:parameter/asandbox/app_env"
+          "valueFrom": "arn:aws:ssm:us-west-2:131477731930:parameter/asandbox/ENV_TYPE"
         },
         {
           "name": "SQLALCHEMY_DATABASE_URI",
@@ -36,11 +36,11 @@
       ]
     }
   ],
-  "cpu": "256",
+  "cpu": "512",
   "executionRoleArn": "arn:aws:iam::131477731930:role/awssandbox-ecs-task-execution",
-  "family": "awssandbox-api-task-backend",
+  "family": "awssandbox-app",
   "ipcMode": "",
-  "memory": "512",
+  "memory": "1024",
   "networkMode": "awsvpc",
   "pidMode": "",
   "requiresCompatibilities": [

@@ -17,21 +17,21 @@
   "launchType": "FARGATE",
   "loadBalancers": [
     {
-      "containerName": "awssandbox-api-container",
+      "containerName": "awssandbox-app-container",
       "containerPort": 80,
-      "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:131477731930:targetgroup/awssandbox-service-tg-backend/42f5b82e0bc886f5"
+      "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:131477731930:targetgroup/awssandbox-ecs-app/99cea3e37c9f4199"
     }
   ],
   "networkConfiguration": {
     "awsvpcConfiguration": {
       "assignPublicIp": "DISABLED",
       "securityGroups": [
-        "sg-0cee2918761f941d0",
-        "sg-0b344a5ae6a611bda"
+        "sg-041db1e212cb4b9e6",
+        "sg-0a0b5ae1a6fb2ccca"
       ],
       "subnets": [
-        "subnet-04ac2cd5c96744774",
-        "subnet-038490e0ce73a0976"
+        "subnet-0de400927d29aaa3d",
+        "subnet-0180379ccfe65a081"
       ]
     }
   },

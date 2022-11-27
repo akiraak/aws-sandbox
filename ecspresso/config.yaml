@@ -1,6 +1,6 @@
 region: us-west-2
-cluster: awssandbox-app-cluster
-service: awssandbox-backend
+cluster: awssandbox-app
+service: awssandbox-app
 service_definition: ecs-service-def.json
 task_definition: ecs-task-def.json
 timeout: "10m0s"

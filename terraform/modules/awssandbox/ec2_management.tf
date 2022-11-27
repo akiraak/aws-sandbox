@@ -8,7 +8,7 @@ resource "aws_instance" "management" {
     aws_security_group.management.id,
     aws_security_group.db.id,
   ]
-  subnet_id                   = aws_subnet.public_management_1.id
+  subnet_id                   = aws_subnet.public_management[0].id
   key_name                    = aws_key_pair.management.key_name
   instance_type               = var.instance_type_management
   associate_public_ip_address = "true"

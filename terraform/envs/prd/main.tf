@@ -14,10 +14,7 @@ module "awssandbox" {
   route53_zone_name = var.main.route53_zone_name
   api_subdomain = var.main.api_subdomain
   region = var.main.region
-  az_1 = var.main.az_1
-  az_2 = var.main.az_2
-  #acm_certificate_arn_app = var.main.acm_certificate_arn_app
-  #acm_certificate_arn_admin = var.main.acm_certificate_arn_admin
+  azs = var.main.azs
   instance_type_management = var.main.instance_type_management
   instance_type_app = var.main.instance_type_app
   instance_type_admin = var.main.instance_type_admin

@@ -1,22 +1,16 @@
-variable "vpc" {
-  default = {
-    "vpc_cidr_block" = "10.0.0.0/16"
-    "subnet_public_management_1_cidr_block" = "10.0.240.0/24"
-    "subnet_public_management_2_cidr_block" = "10.0.241.0/24"
-    "subnet_public_app_alb_1_cidr_block" = "10.0.0.0/24"
-    "subnet_public_app_alb_2_cidr_block" = "10.0.1.0/24"
-    "subnet_private_app_1_cidr_block" = "10.0.8.0/24"
-    "subnet_private_app_2_cidr_block" = "10.0.9.0/24"
-    "subnet_private_app_db_1_cidr_block" = "10.0.16.0/24"
-    "subnet_private_app_db_2_cidr_block" = "10.0.17.0/24"
-  }
+locals {
+  vpc_cidr_block = "10.0.0.0/16"
+  subnet_public_alb_cidr_blocks = ["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  subnet_private_app_cidr_blocks = ["10.0.8.0/24", "10.0.9.0/24", "10.0.10.0/24", "10.0.11.0/24"]
+  subnet_private_db_cidr_blocks = ["10.0.16.0/24", "10.0.17.0/24", "10.0.18.0/24", "10.0.19.0/24"]
+  subnet_public_management_cidr_blocks = ["10.0.240.0/24", "10.0.241.0/24", "10.0.242.0/24", "10.0.243.0/24"]
 }
 
 # ================================================
 # VPC
 # ================================================
 resource "aws_vpc" "main" {
-  cidr_block           = var.vpc.vpc_cidr_block
+  cidr_block           = local.vpc_cidr_block
   enable_dns_support   = true
   enable_dns_hostnames = true
   tags = {
@@ -59,7 +53,7 @@ resource "aws_eip" "nat" {
 
 resource "aws_nat_gateway" "main" {
   allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public_alb_1.id
+  subnet_id     = aws_subnet.public_alb[0].id
 
   tags = {
     Name = "${var.name}"
@@ -82,114 +76,77 @@ resource "aws_route_table" "private" {
 # ================================================
 # Public Subnet: ALB
 # ================================================
-resource "aws_subnet" "public_alb_1" {
+resource "aws_subnet" "public_alb" {
+  count             = length(var.azs)
+
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.vpc.subnet_public_app_alb_1_cidr_block
-  availability_zone = var.az_1
+  cidr_block        = local.subnet_public_alb_cidr_blocks[count.index]
+  availability_zone = var.azs[count.index]
   tags = {
-    Name = "${var.name}-public-app-alb-1"
+    Name = "${var.name}-public-app-alb-${count.index}"
   }
 }
 
-resource "aws_subnet" "public_alb_2" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.vpc.subnet_public_app_alb_2_cidr_block
-  availability_zone = var.az_2
-  tags = {
-    Name = "${var.name}-public-app-alb-2"
-  }
-}
+resource "aws_route_table_association" "public_alb" {
+  count           = length(var.azs)
 
-resource "aws_route_table_association" "public_alb_1" {
-  subnet_id      = aws_subnet.public_alb_1.id
-  route_table_id = aws_route_table.public.id
-}
-
-resource "aws_route_table_association" "public_alb_2" {
-  subnet_id      = aws_subnet.public_alb_2.id
+  subnet_id      = aws_subnet.public_alb[count.index].id
   route_table_id = aws_route_table.public.id
 }
 
 # ================================================
 # Private Subnet: APP
 # ================================================
-resource "aws_subnet" "private_app_1" {
+resource "aws_subnet" "private_app" {
+  count             = length(var.azs)
+
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.vpc.subnet_private_app_1_cidr_block
-  availability_zone = var.az_1
+  cidr_block        = local.subnet_private_app_cidr_blocks[count.index]
+  availability_zone = var.azs[count.index]
   tags = {
-    Name = "${var.name}-private-app-1"
+    Name = "${var.name}-private-app-${count.index}"
   }
 }
 
-resource "aws_subnet" "private_app_2" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.vpc.subnet_private_app_2_cidr_block
-  availability_zone = var.az_2
-  tags = {
-    Name = "${var.name}-private-app-2"
-  }
-}
+resource "aws_route_table_association" "private_app" {
+  count           = length(var.azs)
 
-resource "aws_route_table_association" "private_app_1" {
-  subnet_id      = aws_subnet.private_app_1.id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "private_app_2" {
-  subnet_id      = aws_subnet.private_app_2.id
+  subnet_id      = aws_subnet.private_app[count.index].id
   route_table_id = aws_route_table.private.id
 }
 
 # ================================================
 # Private Subnet: DB
 # ================================================
-resource "aws_subnet" "private_app_db_1" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.vpc.subnet_private_app_db_1_cidr_block
-  availability_zone = var.az_1
-  tags = {
-    Name = "${var.name}-private-app-db-1"
-  }
-}
+resource "aws_subnet" "private_db" {
+  count             = length(var.azs)
 
-resource "aws_subnet" "private_app_db_2" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.vpc.subnet_private_app_db_2_cidr_block
-  availability_zone = var.az_2
+  cidr_block        = local.subnet_private_db_cidr_blocks[count.index]
+  availability_zone = var.azs[count.index]
   tags = {
-    Name = "${var.name}-private-app-db-2"
+    Name = "${var.name}-private-db-${count.index}"
   }
 }
 
 # ================================================
 # Public Subnet: management
 # ================================================
-resource "aws_subnet" "public_management_1" {
+resource "aws_subnet" "public_management" {
+  count             = length(var.azs)
+
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.vpc.subnet_public_management_1_cidr_block
-  availability_zone = var.az_1
+  cidr_block        = local.subnet_public_management_cidr_blocks[count.index]
+  availability_zone = var.azs[count.index]
   tags = {
-    Name = "${var.name}-public-management-1"
+    Name = "${var.name}-public-management-${count.index}"
   }
 }
 
-resource "aws_subnet" "public_management_2" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.vpc.subnet_public_management_2_cidr_block
-  availability_zone = var.az_2
-  tags = {
-    Name = "${var.name}-public-management-2"
-  }
-}
+resource "aws_route_table_association" "public_management" {
+  count             = length(var.azs)
 
-resource "aws_route_table_association" "public_management_1" {
-  subnet_id      = aws_subnet.public_management_1.id
-  route_table_id = aws_route_table.public.id
-}
-
-resource "aws_route_table_association" "public_management_2" {
-  subnet_id      = aws_subnet.public_management_2.id
+  subnet_id      = aws_subnet.public_management[count.index].id
   route_table_id = aws_route_table.public.id
 }
 

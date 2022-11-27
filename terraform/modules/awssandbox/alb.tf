@@ -13,8 +13,7 @@ resource "aws_lb" "this" {
   ]
 
   subnets = [
-    aws_subnet.public_alb_1.id,
-    aws_subnet.public_alb_2.id,
+    for s in aws_subnet.public_alb : s.id
   ]
 
   tags = {
