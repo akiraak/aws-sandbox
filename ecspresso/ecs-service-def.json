@@ -19,19 +19,19 @@
     {
       "containerName": "awssandbox-app-container",
       "containerPort": 80,
-      "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:131477731930:targetgroup/awssandbox-ecs-app/99cea3e37c9f4199"
+      "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:131477731930:targetgroup/awssandbox-ecs-app/72a79acbdaf0a2da"
     }
   ],
   "networkConfiguration": {
     "awsvpcConfiguration": {
       "assignPublicIp": "DISABLED",
       "securityGroups": [
-        "sg-041db1e212cb4b9e6",
-        "sg-0a0b5ae1a6fb2ccca"
+        "sg-015e2f33005fa85d4",
+        "sg-0c85270ee64dd5ba2"
       ],
       "subnets": [
-        "subnet-0de400927d29aaa3d",
-        "subnet-0180379ccfe65a081"
+        "subnet-0860ad6ce7bc15745",
+        "subnet-0cebd083b3cb54d2c"
       ]
     }
   },
